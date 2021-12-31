@@ -2,6 +2,7 @@ import queue
 import logging
 import signal
 import tkinter as tk
+import tkinter.messagebox as tkm
 from tkinter.scrolledtext import ScrolledText
 from tkinter import ttk, VERTICAL, HORIZONTAL, N, S, E, W
 from time import sleep
@@ -73,6 +74,9 @@ class ConsoleUi:
                 self.display(record)
         self.frame.after(100, self.poll_log_queue)
 
+    def copy_clipboard(self):
+        self.scrolled_text.clipboard_append(self.scrolled_text.get("1.0", tk.END))
+        tkm.showinfo("Copy to clipboard", "Copied log to clipboard.")
 
 class InputLogUi:
 
@@ -100,6 +104,11 @@ class InputLogUi:
             sleep(1)
 
 
+class LogUtilsUi:
+
+    def __init__(self, frame, copy_clipboard):
+        self.frame = frame
+        tk.Button(self.frame, text="Clipboard Copy", width=20, command=copy_clipboard).grid(column=0, row=3, sticky=W)
 
 class App:
 
@@ -124,8 +133,12 @@ class App:
         input_log_frame = ttk.Labelframe(vertical_pane, text="Log Input Form")
         vertical_pane.add(input_log_frame, weight=1)
 
+        log_utils_frame = ttk.Labelframe(vertical_pane, text="Log Utils")
+        vertical_pane.add(log_utils_frame, weight=1)
+
         self.console = ConsoleUi(console_frame)
         self.input_log = InputLogUi(input_log_frame)
+        self.log_utils = LogUtilsUi(log_utils_frame, self.console.copy_clipboard)
 
         # Handling of application termination.
         self.root.protocol('WM_DELETE_WINDOW', self.quit)
