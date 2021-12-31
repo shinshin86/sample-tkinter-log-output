@@ -78,6 +78,13 @@ class ConsoleUi:
         self.scrolled_text.clipboard_append(self.scrolled_text.get("1.0", tk.END))
         tkm.showinfo("Copy to clipboard", "Copied log to clipboard.")
 
+    def clear_log(self):
+        if tkm.askyesno("Clear log", "Are you sure you want to delete the log?") is True:
+            self.scrolled_text.configure(state='normal')
+            self.scrolled_text.delete("1.0", tk.END)
+            self.scrolled_text.configure(state='disabled')
+
+
 class InputLogUi:
 
     def __init__(self, frame):
@@ -106,9 +113,10 @@ class InputLogUi:
 
 class LogUtilsUi:
 
-    def __init__(self, frame, copy_clipboard):
+    def __init__(self, frame, copy_clipboard, clear_log):
         self.frame = frame
         tk.Button(self.frame, text="Clipboard Copy", width=20, command=copy_clipboard).grid(column=0, row=3, sticky=W)
+        tk.Button(self.frame, text="Clear log", width=20, command=clear_log).grid(column=0, row=4, sticky=W)
 
 class App:
 
@@ -138,7 +146,8 @@ class App:
 
         self.console = ConsoleUi(console_frame)
         self.input_log = InputLogUi(input_log_frame)
-        self.log_utils = LogUtilsUi(log_utils_frame, self.console.copy_clipboard)
+        self.log_utils = LogUtilsUi(log_utils_frame, self.console.copy_clipboard, self.console.copy_clipboard)
+        self.log_utils = LogUtilsUi(log_utils_frame, self.console.copy_clipboard, self.console.clear_log)
 
         # Handling of application termination.
         self.root.protocol('WM_DELETE_WINDOW', self.quit)
