@@ -1,6 +1,7 @@
 import queue
 import logging
 import signal
+import threading
 import tkinter as tk
 import tkinter.messagebox as tkm
 from tkinter.scrolledtext import ScrolledText
@@ -103,12 +104,15 @@ class InputLogUi:
         logger.log(level, log_msg)
 
     def all_log(self, log_msg):
-        log_levels = [logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL]
+        def thread_all_log():
+            log_levels = [logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL]
 
-        # In this case, the logs will be displayed together at the end.
-        for level in log_levels:
-            self.log(level, log_msg)
-            sleep(1)
+            for level in log_levels:
+                self.log(level, log_msg)
+                sleep(1)
+
+        thread = threading.Thread(target=thread_all_log)
+        thread.start()
 
 
 class LogUtilsUi:
